@@ -1,0 +1,15 @@
+<p><h2>Welcome <%= session[:name] %>, let's play!</h2></p>
+
+You're holding:
+<ul>
+	<% session[:player_cards].each do |card| %>
+	<li><%= card.to_s %></li>
+	<% end %>
+</ul>
+<br>
+Dealer is showing:
+<ul>
+	<% session[:dealer_cards].each do |card| %>
+	<li><%= card.to_s %></li>
+	<% end %>
+</ul>
