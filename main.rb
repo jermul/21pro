@@ -47,14 +47,14 @@ helpers do
 		@play_again = true
 		@show_hit_or_stay_buttons = false
 		session[:player_pot] = session[:player_pot] + session[:player_bet]
-		@success = "Congratulations #{session[:name]}, #{msg} You win!"
+		@success = "Congratulations #{session[:player_name]}, #{msg} You win!"
 	end
 
 	def loser!(msg)
 		@play_again = true
 		@show_hit_or_stay_buttons = false
 		session[:player_pot] = session[:player_pot] - session[:player_bet]
-		@error = "Sorry #{session[:name]}, #{msg} You lose."
+		@error = "Sorry #{session[:player_name]}, #{msg} You lose."
 	end
 
 	def tie!(msg)
@@ -70,7 +70,7 @@ before do
 end
 
 get '/' do
-	if session[:name]
+	if session[:player_name]
 		redirect '/game'
 	else
 		redirect '/new_player'
@@ -83,11 +83,11 @@ get '/new_player' do
 end
 
 post '/new_player' do
-	if params[:name].empty?
+	if params[:player_name].empty? || params[:player_name].nil?
 		@error = "Name is required, please enter a name."
 		halt erb(:new_player)
 	else
-	  session[:name] = params['name']
+	  session[:player_name] = params['name']
 	  redirect '/bet'
   end
 end
@@ -112,7 +112,7 @@ end
 
 
 get '/game' do
-	session[:turn] = session[:name]
+	session[:turn] = session[:player_name]
 
 	ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 	suits = ['B', 'A', 'F', 'G']
@@ -147,7 +147,7 @@ end
 
 post '/stay' do
 	@show_hit_or_stay_buttons = false
-	@success = "#{session[:name]}, you have chosen to stay."
+	@success = "#{session[:player_name]}, you have chosen to stay."
 	redirect '/dealer_turn'
 end
 
