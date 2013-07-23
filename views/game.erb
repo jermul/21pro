@@ -7,7 +7,7 @@
 	</p>
 <% end %>
 
-<p>Welcome to MLP Blackjack, <%= session[:name] %>.</p>
+<h3>Welcome to MLP Blackjack.</h3>
 	<div class="well">
 		<h4>Dealer is showing:</h4>
 		<% session[:dealer_cards].each_with_index do |card, index| %>
@@ -32,12 +32,13 @@
 	</div>
 
 	<p>
-		<b>You have <%= calculate_total(session[:player_cards]) %>.</b>
+		<b>You have $<%= session[:player_pot] %> and have bet $<%= session[:player_bet] %> this round.
+			You have a total card value of <%= calculate_total(session[:player_cards]) %>.</b>
 	<p>
 
 	<p>
 		<% if @show_hit_or_stay_buttons %>
-			<b>What would you like to do?</b>
+			<b>What would you like to do next?</b>
 			<form id='hit_form' action='/hit' method='post'>
 				<input type='submit' value='Hit' class='btn btn-success'/>
 			</form>

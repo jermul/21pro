@@ -9,18 +9,6 @@ INITIAL_POT    = 500
 
 helpers do
 
-	def card_image(card)
-		rank = card[0]
-		suit = case card[1]
-			when 'B' then 'balloons'
-			when 'A' then 'apples'
-			when 'F' then 'flutters'
-			when 'G' then 'gems'
-		end
-	
-		"<img src='/images/cards/#{rank} of #{suit}.png' class='card_image'>"
-	end
-
 	def calculate_total(cards)
 		card_ranks = cards.map {|card| card[0]}
 		total = 0
@@ -43,18 +31,30 @@ helpers do
 		total
 	end
 
+	def card_image(card)
+		rank = card[0]
+		suit = case card[1]
+			when 'B' then 'balloons'
+			when 'A' then 'apples'
+			when 'F' then 'flutters'
+			when 'G' then 'gems'
+		end
+	
+		"<img src='/images/cards/#{rank} of #{suit}.png' class='card_image'>"
+	end
+
 	def winner!(msg)
 		@play_again = true
 		@show_hit_or_stay_buttons = false
 		session[:player_pot] = session[:player_pot] + session[:player_bet]
-		@success = "Congratulations #{session[:player_name]}, #{msg} You win!"
+		@success = "Congratulations #{session[:player_name]}, #{msg} You won $#{session[:player_bet]}, giving you a total of $#{session[:player_pot]}"
 	end
 
 	def loser!(msg)
 		@play_again = true
 		@show_hit_or_stay_buttons = false
 		session[:player_pot] = session[:player_pot] - session[:player_bet]
-		@error = "Sorry #{session[:player_name]}, #{msg} You lose."
+		@error = "Sorry #{session[:player_name]}, #{msg} You lost $#{session[:player_bet]}, giving you a total of $#{session[:player_pot]}."
 	end
 
 	def tie!(msg)
@@ -83,13 +83,13 @@ get '/new_player' do
 end
 
 post '/new_player' do
-	if params[:player_name].empty? || params[:player_name].nil?
+	if params[:player_name].nil? || params[:player_name].empty?
 		@error = "Name is required, please enter a name."
 		halt erb(:new_player)
-	else
-	  session[:player_name] = params['name']
-	  redirect '/bet'
-  end
+	end
+
+	session[:player_name] = params[:player_name]
+	redirect '/bet'
 end
 
 get '/bet' do
@@ -183,7 +183,7 @@ get '/determine_winner' do
 	elsif dealer_total == BLACKJACK_AMT
 		loser!("the dealer got Blackjack.")
 	elsif dealer_total > BLACKJACK_AMT
-		winner!("dealer busted!")
+		winner!("dealer busted at #{dealer_total.to_s}!")
 	elsif player_total > BLACKJACK_AMT
 		loser!("you went over #{BLACKJACK_AMT.to_s}.")
 	elsif player_total > dealer_total
